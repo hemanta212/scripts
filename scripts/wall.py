@@ -30,5 +30,6 @@ except ConnectionError:
         path = "F:/programs/wallpaper/pictures/wallpaper.jpg" # app's default path
         path = "C:/Users/HP/Desktop/"
         ctypes.windll.user32.SystemParametersInfoW(20, 0, path, 3)
-    except Exception as e:
-        print(e)
+    except FileNotFoundError:
+        print("The given path has no pictures")
+        print("Wallpaper change failed")
