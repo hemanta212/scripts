@@ -1,14 +1,14 @@
 from bs4 import BeautifulSoup as BS
-import urllib.request
-import requests
+from requests import ConnectionError
+from requests import get as GET
 import ctypes
-import random
+from random import choice
 
 url = "https://wallpapersafari.com/dark-theme-wallpaper/"
 headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36'}
 
 try:
-    response = requests.get(url, headers=headers)
+    response = GET(url, headers=headers)
     soup = BS(response.content, 'lxml')
 
     links = []
@@ -22,8 +22,13 @@ try:
     image_raw = requests.get(wallpaper, headers=headers)
     with open(path, 'wb') as wr:
         wr.write(image_raw.content)
-    ctypes.windll.user32.SystemParametersInfoW(20, 0, path, 3)
+        ctypes.windll.user32.SystemParametersInfoW(20, 0, path, 3)
 
-except:
-    path = "F:/programs/wallpaper/pictures/wallpaper.jpg"
-    ctypes.windll.user32.SystemParametersInfoW(20, 0, path, 3)
+except ConnectionError:
+    print("no connection using one of the older wallpapers")
+    try:
+        path = "F:/programs/wallpaper/pictures/wallpaper.jpg" # app's default path
+        path = "C:/Users/HP/Desktop/"
+        ctypes.windll.user32.SystemParametersInfoW(20, 0, path, 3)
+    except Exception as e:
+        print(e)
