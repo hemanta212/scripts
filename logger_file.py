@@ -8,8 +8,9 @@ class Logger:
         name = filename to pass generally it is __name__
         (opt)level = specify level for filehandler (Warning is default)
         (opt)file = file to write log messages to (project.log is default)
-        (opt)debug_on = if true writes a detailed(debug.DEBUG) debug.log file.
         (opt)debug_file = specify debug_on file (sets debug_on automatically)
+        (opt)multidebug if true writes to debug_file in append mode.
+        
     '''
     def __init__(self, name=None, level=logging.DEBUG, file='project.log',
                     debug_on=False, debug_file='debug.log'):
