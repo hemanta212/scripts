@@ -13,7 +13,7 @@ def config_writer(key, value, file='~/.cli_config.json'):
     '''
     writes to a config file as a dictionary
 
-    params:
+    params: 
         key:name of setting
         value: value of setting
         [o]file: config file path
@@ -26,17 +26,17 @@ def config_writer(key, value, file='~/.cli_config.json'):
     if not os.path.exists(file_path):
         with open(file_path, 'w') as f:
             print("file created")
-
+    
     with open(file_path, 'r')as f:
         content = f.read()
-        if content != "":
+        if content != "": 
             print("file is not empty. Trying to append")
             read_dict = json.loads(content)
             read_dict[key] = value
             with open(file_path, 'w')as f:
                 json.dump(read_dict,f)
                 print("succesfully added config")
-        else:
+        else: 
             with open(file_path, 'w')as f:
                 print("file is empty creating first entry")
                 dump_dict = {}
