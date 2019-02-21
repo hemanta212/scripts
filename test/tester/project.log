@@ -1,0 +1,13 @@
+2019-02-20 23:02:02,268 : __main__: INFO : running run method
+2019-02-20 23:02:02,269 : __main__: INFO : running otherrun method
+2019-02-20 23:02:02,270 : __main__: DEBUG : finished
+2019-02-20 23:03:17,122 : __main__: INFO : running run method
+2019-02-20 23:03:42,846 : __main__: INFO : running run method
+2019-02-20 23:03:42,856 : __main__: INFO : running otherrun method
+2019-02-20 23:03:42,857 : __main__: DEBUG : finished
+2019-02-20 23:05:14,309 : __main__: WARNING : running run method
+2019-02-20 23:05:14,309 : slave: WARNING : hello from here
+2019-02-20 23:05:14,319 : __main__: WARNING : running otherrun method
+2019-02-20 23:05:14,320 : __main__: WARNING : finished
+2019-02-20 23:06:53,615 : slave: WARNING : hello from here
+2019-02-20 23:06:53,616 : otherslave: WARNING : hello from here

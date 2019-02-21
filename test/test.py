@@ -12,7 +12,7 @@ def main():
 @main.command()
 def hi():
     '''
-    A comand test if succesfully installed 
+    A comand test if succesfully installed
     '''
     print('''WELCOME TO BLOGGER_CLI
     Blogger cli is succesfully installed and working!
@@ -28,7 +28,7 @@ def config(key):
     '''
     config_file = os.path.expanduser('~/.blogger_cli_config.json')
     key = click.prompt('Input the key to store', default=key)
-    config_writer(key='key', value=key, file=config_file) 
+    config_writer(key='key', value=key, file=config_file)
 
 if __name__ == "__main__":
     main()

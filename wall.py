@@ -25,5 +25,5 @@ try:
     ctypes.windll.user32.SystemParametersInfoW(20, 0, path, 3)
 
 except:
-    path = "F:/programs/wallpaper/pictures/wallpaper.jpg"
+    path = "F:/programs/wallpaper/pictures/wallpaper.png"
     ctypes.windll.user32.SystemParametersInfoW(20, 0, path, 3)

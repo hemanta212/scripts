@@ -42,4 +42,3 @@ def send_email(sender=def_email, email=def_email, password=def_pass,
 
 if __name__ == '__main__':
     send_email()
-
