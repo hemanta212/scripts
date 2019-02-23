@@ -1,51 +1,24 @@
 '''Simplify logging creation no needed parameter '''
 import logging
-import os
 
 class Logger:
     '''
     Customized logger class having get_logger method returning a logger
     params:
-        (opt)name = filename to pass generally it is __name__
-        (opt)level = specify level for Hfilehandler (Warning is default)
+        name = filename to pass generally it is __name__
+        (opt)level = specify level for filehandler (Warning is default)
         (opt)file = file to write log messages to (project.log is default)
-        (opt)mode = which mode to write. Default['a']
-        (opt)debug_file = specify mode file
-        (opt)debug_mode = specify which mode to use default['w']
+        (opt)debug_file = specify debug_on file (sets debug_on automatically)
+        (opt)multidebug if true writes to debug_file in append mode.
+        
     '''
-    def __init__(self, name=None, level='warning', file='project.log',
-                    mode='a', debug_file=None, debug_mode='w', **kwargs):
-        super().__init__(**kwargs)
+    def __init__(self, name=None, level=logging.DEBUG, file='project.log',
+                    debug_on=False, debug_file='debug.log'):
         self.name = name
-        self.level = self.level_parser(level)
+        self.level = level
         self.file = file
-        self.mode = mode
-        self.debug_mode = debug_mode
+        self.debug_on = debug_on
         self.debug_file = debug_file
-
-    @staticmethod
-    def level_parser(key):
-        level_dict = {
-            'debug':logging.DEBUG,
-            'warning':logging.WARNING,
-            'error':logging.ERROR,
-            'info':logging.INFO,
-            'fatal':logging.FATAL,
-            'critical':logging.CRITICAL,
-        }
-        return level_dict[key]
-    @staticmethod
-    def handle_file(file):
-        '''
-        Checks if a file exists if not creates directory upto that files
-        Params:
-            file : Input file
-        '''
-        if not os.path.exists(file):
-            try:
-                os.makedirs(os.path.split(file)[0])
-            except FileExistsError:
-                pass
 
     def get_logger(self):
         '''returns a logger as specified in Logger class'''
@@ -70,17 +43,16 @@ class Logger:
 
         #create file handler and set level to warning
         if self.file == 'project.log': #since project.log is default.
-            filehandler = logging.FileHandler(self.file, mode=self.mode)
+            filehandler = logging.FileHandler(self.file, mode='a')
         else:
-            self.handle_file(self.file)
-            filehandler = logging.FileHandler(self.file, mode=self.mode)
-        filehandler.setLevel(self.level)
+            filehandler = logging.FileHandler(self.file, mode='w')
+        filehandler.setLevel(logging.WARNING)
         filehandler.setFormatter(formatter)
         logger.addHandler(filehandler)
 
-        if self.debug_file:
-            self.handle_file(self.debug_file)
-            debug_filehandler = logging.FileHandler(self.debug_file, mode=self.debug_mode)
+        if (self.debug_on == True or self.debug_file != 'debug.log'):
+            #create file handler and set level to warning
+            debug_filehandler = logging.FileHandler(self.debug_file, mode='w')
             debug_filehandler.setLevel(logging.DEBUG)
             debug_filehandler.setFormatter(formatter)
             logger.addHandler(debug_filehandler)
