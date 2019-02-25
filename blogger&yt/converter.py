@@ -44,7 +44,7 @@ def convert(notebook_file):
 	except:
 		title="PYKANCHA"
 
-	
+
 	if BASIC:
 		body = '''<style>
 body {
@@ -54,6 +54,10 @@ body {
     color: #777777;
     background-color: #ffffff;
 
+}
+.inner_cell {
+    font-family: consolas;
+    font-size: 1em;
 }
 a.anchor-link:link {
     text-decoration: none;
@@ -93,7 +97,7 @@ pre {
     background-color: #f5f5f5;
     border: 1px solid #ccc;
     border-radius: 2px;
-    
+
 }
 pre code {
   padding: 0;
