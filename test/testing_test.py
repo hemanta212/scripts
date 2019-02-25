@@ -7,11 +7,11 @@ class TestTest(unittest.TestCase):
         runner = CliRunner()
         result = runner.invoke(test.main, ['hi'])
         self.assertEqual(result.exit_code,0)
-        self.assertEqual(result.output,'hi\n')
+        #self.assertEqual(result.output,'hi\n')
 
-        result = runner.invoke(test.main, ['hi', '-n', 'ram'])
+        result = runner.invoke(test.main, ['config', '-k', 'ram'])
         self.assertEqual(result.exit_code,0)
-        self.assertEqual(result.output,'hi ram\n')
+        self.assertEqual(result.output,'Input the key to store [ram]: \n')
 
  
 if __name__ == '__main__':
