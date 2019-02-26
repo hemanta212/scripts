@@ -8,7 +8,6 @@ def main():
     '''
      A testing project for blogger-cli project
     '''
-    no = "ll"
     pass
 
 @main.command()
@@ -31,7 +30,6 @@ def config(key, file, remove, test):
     '''
     give me a suitable key to store
     '''
-    print(test)
     print("Running a config setup")
     file = "~/blogger-cli.cfg"
     cfg = Cfg(file)
@@ -45,5 +43,5 @@ def read(key):
     pass
 
 if __name__ == "__main__":
-    logger = Logger().get_logger()
+    logger = Logger(level="debug", console=False).get_logger()
     main()

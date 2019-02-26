@@ -7,21 +7,23 @@ class Logger:
     Customized logger class having get_logger method returning a logger
     params:
         (opt)name = filename to pass generally it is __name__
-        (opt)level = specify level for Hfilehandler (Warning is default)
-        (opt)file = file to write log messages to (project.log is default)
+        (opt)level = specify level for filehandler (Warning is default)
+        (opt)logfile = file to write log messages to (project.log is default)
         (opt)mode = which mode to write. Default['a']
         (opt)debug_file = specify mode file
         (opt)debug_mode = specify which mode to use default['w']
     '''
-    def __init__(self, name=None, level='warning', file='project.log',
-                    mode='a', debug_file=None, debug_mode='w', **kwargs):
+    def __init__(self, name=None, level='warning', logfile='project.log',
+                    mode='a', debug_file=None, debug_mode='w',
+                    console=True, **kwargs):
         super().__init__(**kwargs)
         self.name = name
         self.level = self.level_parser(level)
-        self.file = file
+        self.logfile = logfile
         self.mode = mode
         self.debug_mode = debug_mode
         self.debug_file = debug_file
+        self.console = console
 
     @staticmethod
     def level_parser(key):
@@ -56,24 +58,25 @@ class Logger:
 
         logger = logging.getLogger(self.name)
         logger.setLevel(logging.DEBUG)
-
-        # create console handler and set level to debug
-        console_handler = logging.StreamHandler()
-        console_handler.setLevel(logging.DEBUG)
         # create formatter
         format_style = '%(asctime)s : %(name)s: %(levelname)s : %(message)s'
         formatter = logging.Formatter(format_style)
-        # add formatter to console_handler
-        console_handler.setFormatter(formatter)
-        # add console_handler to logger
-        logger.addHandler(console_handler)
+ 
+        # create console handler and set level to debug
+        if self.console:
+            console_handler = logging.StreamHandler()
+            console_handler.setLevel(logging.DEBUG)
+           # add formatter to console_handler
+            console_handler.setFormatter(formatter)
+            # add console_handler to logger
+            logger.addHandler(console_handler)
 
         #create file handler and set level to warning
-        if self.file == 'project.log': #since project.log is default.
-            filehandler = logging.FileHandler(self.file, mode=self.mode)
+        if self.logfile == 'project.log': #since project.log is default.
+            filehandler = logging.FileHandler(self.logfile, mode=self.mode)
         else:
-            self.handle_file(self.file)
-            filehandler = logging.FileHandler(self.file, mode=self.mode)
+            self.handle_file(self.logfile)
+            filehandler = logging.FileHandler(self.logfile, mode=self.mode)
         filehandler.setLevel(self.level)
         filehandler.setFormatter(formatter)
         logger.addHandler(filehandler)
