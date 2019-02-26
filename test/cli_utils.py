@@ -3,6 +3,9 @@ Config manager file to quickly write app configurations
 '''
 import json
 import os
+from logger_file import Logger
+
+logger = Logger().get_logger()
 
 class Config:
     '''
@@ -31,25 +34,25 @@ class Config:
          '''
         if not os.path.exists(self.file_path):
             with open(self.file_path, 'w') as f:
-                print("file created")
+                logger.debug("file created")
 
         with open(self.file_path, 'r')as f:
             content = f.read()
 
             if content != "":
-                print("file is not empty. Trying to append")
+                logger.debug("file is not empty. Trying to append")
                 read_dict = json.loads(content)
                 read_dict[key] = value
                 with open(self.file_path, 'w')as f:
                     json.dump(read_dict,f)
-                    print("succesfully added config")
+                    logger.debug("succesfully added config")
             else:
                 with open(self.file_path,'w')as f:
-                    print("file is empty creating first entry")
+                    logger.debug("file is empty creating first entry")
                     dump_dict = {}
                     dump_dict[key] = value
                     json.dump(dump_dict, f)
-                    print("succesfully added config")
+                    logger.debug("succesfully added config")
 
     def delete_config(self, backup=True):
         '''
@@ -60,18 +63,18 @@ class Config:
         if backup:
             if not os.path.exists(self.backup_dir):
                 os.mkdir(self.backup_dir)
-                print('creating backup dir')
+                logger.debug('creating backup dir')
 
             if os.path.exists(self.file_path):
                 new_name = os.path.join(self.backup_dir, self.file)
                 os.rename(self.file_path,new_name)
-                print('deleted')
+                logger.debug('deleted')
 
             else:
-                print("file not found, check if it exists")
+                logger.debug("file not found, check if it exists")
         else:
             os.remove(self.file_path)
-            print('deleted permanently')
+            logger.debug('deleted permanently')
 
     def file_exists(self):
         if os.path.exists(self.file_path):
@@ -135,5 +138,6 @@ class Config:
         '''
 
         with open(self.file_path, 'w') as f:
-            print("file emptied")
+            logger.debug("file emptied")
+
 
