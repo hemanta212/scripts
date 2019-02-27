@@ -1,94 +1,52 @@
-import os
-def read(self, key=None, value=None, keys=False, values=False):
-        '''
-        Reads and return key or value from config file
-        Params:
-           [o] key: Key of dictionary to get the value of
-           [o] value : value of dictionary to get key of
-           [o] keys [bool] : True returns all keys in list
-           [o] values [bool]: True returns all values in list
-           get() only will return full dictionary object
-        '''
-        if os.path.exists(self.file_path):
-            with open(self.file_path, 'r')as rf:
-                json_data = rf.read() 
-                content = json.loads(json_data) 
-                if values or keys and key  or value:
-                    print("Use of multiple option prohibited")
-                    return('mutiple arguments error')
-                elif key and value is None: 
-                        value = content[key]
-                        return value
-                    except KeyError as e:
-                        print(e,"no such key")
-                        return 'keyerror'
-                elif value and key is None: 
-                    try:
-                        value = [k for k,v in a.items() if v==value]
-                        return value
-                    except KeyError as e:
-                        print(e,"no such key")
-                        return 'keyerror'
+import time
+from selenium import webdriver
+from win10toast import ToastNotifier
 
-                elif not value and not key and not keys and not values 
-                    return content 
+winnotifier = ToastNotifier()
+#datetime.datetime.strptime(date_string, format1).strftime(format2)
+chrome_options = webdriver.ChromeOptions()
+chrome_options.add_argument("--incognito")
+chrome_options.add_argument("--disable-extensions")
+chrome_options.add_argument("--disable-gpu")
+chrome_options.add_argument("--headless")
 
-        else:
-            print("File not found")
-            return 'file not found'
 
-def file_exists(self):
-    if os.path.exists(self.file_path):
-        return True
-    else:
-        raise FileNotFoundError("{0} file not found".format(self.file_path))
+browser = webdriver.Chrome(options=chrome_options)
 
-def get_dict(self):
-    with open(self.file_path, 'r')as rf:
-        json_data = rf.read() 
-        try:
-            content = json.loads(json_data) 
-            return content
-        except Exception as e:
-            raise e("file cannot be read by json")
+#try:
+browser.get("http://192.168.1.1/login.htm")
 
- def read(self, key=None, value=None, all_keys=False, all_values=False):
-        '''
-        Reads and return key or value from config file
-            (returns config dict if no parameter)
-        Params:
-           [o] key: Key of dictionary to get the value of
-           [o] value : value of dictionary to get key of
-           [o] all_keys [bool] : True returns all keys dict object 
-           [o] all_values [bool]: True returns all values dict object.
-        '''
-    #Check if more than 1 kwargs given           
-    args = (key, value, all_keys, all_values)
-    given = [1 for i in args if i]
-    if len(given) >=2:
-        raise ValueError("More than 1 arguments given")
+try:
+    username = browser.find_element_by_name("username")
+    password = browser.find_element_by_name("userpass")
 
-    #ensure the file exists.
-    self.file_exists():
-    #load the dictionary from config
-    configs = self.get_dict()
-    if all_keys:
-        return configs.keys()
+    username.send_keys("admin")
+    password.send_keys("admin")
 
-    elif all_values:
-        return configs.values()
+    #browser.find_element_by_xpath('//input[contains(@onclick,"return saveChanges()")]').click()
+    browser.find_element_by_css_selector("input[onclick*='return saveChanges()']").click()
 
-    elif key:
-        try:
-            return configs[key]
-        except KeyError:
-            raise KeyError("The key doesnot exist in config")
+    browser.get("http://192.168.1.1/reboot.htm")
+    time.sleep(1)
+    browser.find_element_by_css_selector("input[onclick*='return rebootClick()']").click()
+    #browser.find_element_by_id("restartNow").click()
+    time.sleep(1)
+    alert_obj = browser.switch_to.alert
+    alert_obj.accept()
+    winnotifier.show_toast("sharmaji: Wifi rebooted",\
+     "TOTOLINK succesfully has been rebooted wait for 10-15 secs", duration=5)
+    time.sleep(3)
+    browser.close()
 
-    elif value:
-        try:
-            key = [k for k,v in configs.items() if v==value]
-            return value[0]
-        except KeyError:
-            raise KeyError("The value doesnot exist in config")
-    else:
-        return self.get_dict()
+except:
+    browser.get("http://192.168.1.1/reboot.htm")
+    time.sleep(1)
+    browser.find_element_by_css_selector("input[onclick*='return rebootClick()']").click()
+    alert_obj = browser.switch_to.alert
+    time.sleep(1)
+    alert_obj.accept()
+    winnotifier.show_toast("sharmaji: Wifi rebooted",\
+     "TOTOLINK succesfully has been rebooted wait for 10-15 secs", duration=5)
+    time.sleep(3)
+    browser.close()
+
