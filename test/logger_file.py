@@ -61,9 +61,8 @@ class Logger:
         # create formatter
         format_style = '%(asctime)s : %(name)s: %(levelname)s : %(message)s'
         formatter = logging.Formatter(format_style)
- 
         # create console handler and set level to debug
-        if self.console:
+        if self.console == True:
             console_handler = logging.StreamHandler()
             console_handler.setLevel(logging.DEBUG)
            # add formatter to console_handler

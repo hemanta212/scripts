@@ -7,7 +7,6 @@ class TestTest(unittest.TestCase):
         runner = CliRunner()
         result = runner.invoke(test.main, ['hi'])
         self.assertEqual(result.exit_code,0)
-        #self.assertEqual(result.output,'hi\n')
 
         result = runner.invoke(test.main, ['config', '-k', 'ram'])
         self.assertEqual(result.exit_code,0)
