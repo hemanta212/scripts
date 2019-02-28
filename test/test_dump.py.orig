@@ -1,11 +1,4 @@
 <<<<<<< HEAD
-t = {
-    1:0,
-}
-print(t)
-
-
-=======
 import time
 from selenium import webdriver
 from win10toast import ToastNotifier
@@ -58,4 +51,11 @@ except:
     time.sleep(3)
     browser.close()
 
->>>>>>> 36c8c16ac23bcc63dd644c4121eb4c144a8d8dcd
+=======
+t = {
+    1:0,
+}
+print(t)
+
+
+>>>>>>> c1678474db106116291cd47b63073cd0ae4494fa
