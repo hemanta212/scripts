@@ -2,10 +2,11 @@
 Config manager file to quickly write app configurations
 '''
 import json
+import datetime
 import os
 from logger_file import Logger
 
-logger = Logger().get_logger()
+logger = Logger(console=False).get_logger()
 
 class Config:
     '''
@@ -40,19 +41,22 @@ class Config:
             content = f.read()
 
             if content != "":
-                logger.debug("file is not empty. Trying to append")
+                logger.debug("file not empty, appending..")
                 read_dict = json.loads(content)
                 read_dict[key] = value
-                with open(self.file_path, 'w')as f:
-                    json.dump(read_dict,f)
-                    logger.debug("succesfully added config")
+                self.write_dict(read_dict) 
+                
             else:
-                with open(self.file_path,'w')as f:
-                    logger.debug("file is empty creating first entry")
-                    dump_dict = {}
-                    dump_dict[key] = value
-                    json.dump(dump_dict, f)
-                    logger.debug("succesfully added config")
+                logger.debug("file empty, first entry")
+                dump_dict = {}
+                dump_dict[key] = value
+                self.write_dict(dump_dict)
+
+    def write_dict(self, new_dict):
+        with open(self.file_path, 'w')as f:
+            json.dump(new_dict, f)
+            logger.debug("succesfully added config dict")
+
 
     def delete_config(self, backup=True):
         '''
@@ -60,13 +64,15 @@ class Config:
         Params:
             backup [boolean] : Defaults to True
         '''
+        #manage name acc to current datetime
+        name = str(datetime.datetime.now()) + '.cfg'
         if backup:
             if not os.path.exists(self.backup_dir):
                 os.mkdir(self.backup_dir)
                 logger.debug('creating backup dir')
 
             if os.path.exists(self.file_path):
-                new_name = os.path.join(self.backup_dir, self.file)
+                new_name = os.path.join(self.backup_dir,name) 
                 os.rename(self.file_path,new_name)
                 logger.debug('deleted')
 
@@ -87,7 +93,7 @@ class Config:
                 content = json.loads(json_data)
                 return content
             except Exception as e:
-                raise e("file maybe empty or not contain json data")
+                raise e #("file maybe empty or not contain json data")
 
     def read(self, key=None, value=None, all_keys=False, all_values=False):
         '''
@@ -132,7 +138,7 @@ class Config:
         else:
             return self.get_dict()
 
-    def empty_config(self):
+    def init_config(self):
         '''Empties the file
         Raises error with .read() method but applicable with write()
         '''
@@ -140,4 +146,10 @@ class Config:
         with open(self.file_path, 'w') as f:
             logger.debug("file emptied")
 
-
+    def delete_key(self, key):
+        '''
+         Deletes a given key from the config
+        '''
+        config_dict = self.get_dict()
+        del config_dict[key]
+        self.write_dict(config_dict)
