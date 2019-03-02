@@ -2,19 +2,23 @@
 import logging
 import os
 
+
 class Logger:
     '''
     Customized logger class having get_logger method returning a logger
-    params:
-        (opt)name = filename to pass generally it is __name__
-        (opt)level = specify level for Hfilehandler (Warning is default)
-        (opt)file = file to write log messages to (project.log is default)
-        (opt)mode = which mode to write. Default['a']
-        (opt)debug_file = specify mode file
-        (opt)debug_mode = specify which mode to use default['w']
+
+    params: [all are optional]
+        name = filename to pass generally it is __name__
+        level = specify level for Hfilehandler (Warning is default)
+        file = file to write log messages to (project.log is default)
+        mode = which mode to write. Default['a']
+        debug_file = specify mode file
+        debug_mode = specify which mode to use default['w']
+        console [bool] = swictch console logging on or off.
     '''
+
     def __init__(self, name=None, level='warning', file='project.log',
-                    mode='a', debug_file=None, debug_mode='w', **kwargs):
+                 mode='a', debug_file=None, debug_mode='w', **kwargs):
         super().__init__(**kwargs)
         self.name = name
         self.level = self.level_parser(level)
@@ -25,19 +29,25 @@ class Logger:
 
     @staticmethod
     def level_parser(key):
+        '''
+        logging attrs mapping to strs for easy parameter setting.
+        param = 'debug', 'warning' etc in str
+        output = logging.DEBUG, logging.Warning etc attributes
+        '''
         level_dict = {
-            'debug':logging.DEBUG,
-            'warning':logging.WARNING,
-            'error':logging.ERROR,
-            'info':logging.INFO,
-            'fatal':logging.FATAL,
-            'critical':logging.CRITICAL,
+            'debug': logging.DEBUG,
+            'warning': logging.WARNING,
+            'error': logging.ERROR,
+            'info': logging.INFO,
+            'fatal': logging.FATAL,
+            'critical': logging.CRITICAL,
         }
         return level_dict[key]
+
     @staticmethod
     def handle_file(file):
         '''
-        Checks if a file exists if not creates directory upto that files
+        Checks if file exists else creates directory upto that file.
         Params:
             file : Input file
         '''
@@ -48,7 +58,9 @@ class Logger:
                 pass
 
     def get_logger(self):
-        '''returns a logger as specified in Logger class'''
+        '''
+        returns a logger as specified in Logger class
+        '''
         if self.name is None:
             import inspect
             caller = inspect.currentframe().f_back
@@ -68,19 +80,17 @@ class Logger:
         # add console_handler to logger
         logger.addHandler(console_handler)
 
-        #create file handler and set level to warning
-        if self.file == 'project.log': #since project.log is default.
-            filehandler = logging.FileHandler(self.file, mode=self.mode)
-        else:
-            self.handle_file(self.file)
-            filehandler = logging.FileHandler(self.file, mode=self.mode)
+        # create file handler and set level to warning
+        self.handle_file(self.file)
+        filehandler = logging.FileHandler(self.file, mode=self.mode)
         filehandler.setLevel(self.level)
         filehandler.setFormatter(formatter)
         logger.addHandler(filehandler)
 
         if self.debug_file:
             self.handle_file(self.debug_file)
-            debug_filehandler = logging.FileHandler(self.debug_file, mode=self.debug_mode)
+            debug_filehandler = logging.FileHandler(
+                self.debug_file, mode=self.debug_mode)
             debug_filehandler.setLevel(logging.DEBUG)
             debug_filehandler.setFormatter(formatter)
             logger.addHandler(debug_filehandler)

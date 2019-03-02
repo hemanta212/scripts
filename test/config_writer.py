@@ -8,6 +8,7 @@ from logger_file import Logger
 
 logger = Logger(console=False).get_logger()
 
+
 class Config:
     '''
     Config class with methods
@@ -18,9 +19,10 @@ class Config:
         delete_config()#deletes a config file
         empty_config()#empties a config file
     '''
+
     def __init__(self, file, backup_dir='~/.cli_backup/'):
         self.file_path = os.path.expanduser(file)
-        self.file =os.path.basename(file)
+        self.file = os.path.basename(file)
         self.backup_dir = os.path.expanduser(backup_dir)
 
     def write(self, key, value):
@@ -34,18 +36,17 @@ class Config:
             Config.write('user.email','a@a.com')
          '''
         if not os.path.exists(self.file_path):
-            with open(self.file_path, 'w') as f:
+            with open(self.file_path, 'w'):
                 logger.debug("file created")
 
-        with open(self.file_path, 'r')as f:
-            content = f.read()
+        with open(self.file_path, 'r')as rf:
+            content = rf.read()
 
             if content != "":
                 logger.debug("file not empty, appending..")
                 read_dict = json.loads(content)
                 read_dict[key] = value
-                self.write_dict(read_dict) 
-                
+                self.write_dict(read_dict)
             else:
                 logger.debug("file empty, first entry")
                 dump_dict = {}
@@ -53,10 +54,13 @@ class Config:
                 self.write_dict(dump_dict)
 
     def write_dict(self, new_dict):
-        with open(self.file_path, 'w')as f:
-            json.dump(new_dict, f)
+        '''
+        params: dictionary containing configs
+        returns : nothing
+        '''
+        with open(self.file_path, 'w')as rf:
+            json.dump(new_dict, rf)
             logger.debug("succesfully added config dict")
-
 
     def delete_config(self, backup=True):
         '''
@@ -64,16 +68,16 @@ class Config:
         Params:
             backup [boolean] : Defaults to True
         '''
-        #manage name acc to current datetime
+        # manage name acc to current datetime
         name = str(datetime.datetime.now()) + '.cfg'
         if backup:
             if not os.path.exists(self.backup_dir):
-                os.mkdir(self.backup_dir)
+                os.makedirs(self.backup_dir)
                 logger.debug('creating backup dir')
 
             if os.path.exists(self.file_path):
-                new_name = os.path.join(self.backup_dir,name) 
-                os.rename(self.file_path,new_name)
+                new_name = os.path.join(self.backup_dir, name)
+                os.rename(self.file_path, new_name)
                 logger.debug('deleted')
 
             else:
@@ -83,17 +87,23 @@ class Config:
             logger.debug('deleted permanently')
 
     def file_exists(self):
+        '''returns True or False '''
         if os.path.exists(self.file_path):
             return True
+        else:
+            return False
 
     def get_dict(self):
+        '''
+        returns: A python dictionary of all configs
+        '''
         with open(self.file_path, 'r')as rf:
             json_data = rf.read()
             try:
                 content = json.loads(json_data)
                 return content
             except Exception as e:
-                raise e #("file maybe empty or not contain json data")
+                raise e  # ("file maybe empty or not contain json data")
 
     def read(self, key=None, value=None, all_keys=False, all_values=False):
         '''
@@ -103,17 +113,17 @@ class Config:
                [o] key: Key of dictionary to get the value of
                [o] value : value of dictionary to get key of
                [o] all_keys [bool] : True returns all keys dict object
-               [o] all_values [bool]: True returns all values dict object.
+               [o] all_values [bool]: True returns all values dict obj.
         '''
-        #Check if more than 1 kwargs given
+        # Check if more than 1 kwargs given
         arguments = (key, value, all_keys, all_values)
         given = [1 for i in arguments if i]
-        if len(given) >=2:
+        if len(given) >= 2:
             raise ValueError("More than 1 arguments given")
 
-        #ensure the file exists.
+        # ensure the file exists.
         self.file_exists()
-        #load the dictionary from config
+        # load the dictionary from config
         configs = self.get_dict()
         if all_keys:
             return configs.keys()
@@ -128,7 +138,7 @@ class Config:
                 raise KeyError("The key doesnot exist in config")
 
         elif value:
-            key = [k for k,v in configs.items() if v==value]
+            key = [k for k, v in configs.items() if v == value]
             if len(key) == 1:
                 return key[0]
             elif len(key) > 1:
@@ -143,7 +153,7 @@ class Config:
         Raises error with .read() method but applicable with write()
         '''
 
-        with open(self.file_path, 'w') as f:
+        with open(self.file_path, 'w'):
             logger.debug("file emptied")
 
     def delete_key(self, key):
