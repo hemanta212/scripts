@@ -7,6 +7,7 @@ __version__ ='0.1.0'
 import os
 from pprint import pprint
 import click
+import jmespath
 from config_writer import Config as Cfg
 from logger_file import Logger
 from cli_utils.blog import Blog
@@ -42,31 +43,50 @@ use blogger-cli --help for more info!
 @click.option('--blog', '-b', help='name of the blog')
 @click.argument('command', nargs=-1, required=False)
 def config(command, blog):
+
+    try:
+        cfg.get_dict()
+
+    except FileNotFoundError:
+        message = ["Config uninitialized!",
+                    "Use blogger-cli blogs -a <name>",
+                    "to initialize it.",
+            ]
+        print(" ".join(message))
+        return 0
+
+
     if not command and not blog:
         print("Configuration file:", cfg)
         pprint(cfg.get_dict())
 
     elif command and command[0] == 'delete':
-         response = click.prompt("delete the config file?[y/n]")
-
-         if response.lower() in ('y', 'yes'):
+         if click.confirm('delete the config file?', abort=True):
             cfg.delete_config()
             print('deleted config file')
 
-         else:
-             print('aborted')
+    else:
+        if not blog:
+            click.secho("checking for default blog")
+            default_blog = jmespath.search('default', cfg.get_dict())
+            if default_blog:
+                blog = default_blog
+                print("using",blog,"as default")
+                blog_obj = Blog(cfg, blog)
+            else:
+                message = ["No default blog set! Set one using",
+                            "blogger-cli blogs -def <blog_name>",
+                          ]
+                print("\n".join(message))
+                return 0
 
-    elif not blog:
-        click.secho("checking for default blog")
-
-    else: #if blog is given 
-        blog_obj = Blog(cfg, blog)
+        else: #if blog is given 
+            blog_obj = Blog(cfg, blog)
 
         if blog_obj.exists():
             if not command:
                 blog_dict = blog_obj.get_dict()
                 [print(k+":",v) for k,v in blog_dict.items()]
-                #pprint(blog_obj.get_dict())
 
             elif len(command) == 1:
                 if command[0] == 'keys':
@@ -83,20 +103,20 @@ def config(command, blog):
             else:
                 key, value = command
                 blog_attr = cfg.read(key=blog)
-
                 if key in blog_attr:
                     blog_obj.add_key(key, value)
                     print("added", value, "to", key)
                 else:
-                   print("Invalid key", key)
+                    print("Invalid config key", '\'' + key + '\'')
 
 
 @main.command()
 @click.option('--setup', '-s', help="setup all config values for a blog")
+@click.option('--default', '-def', help='name of default blog to use')
 @click.option('--remove', '-rm', help="remove a blog")
 @click.option('--add', '-a', help="add a new blog")
 @click.argument('info', required=False)
-def blogs(setup, add, remove, info):
+def blogs(setup, add, remove, info, default):
     '''
     Manages blogs setting, adding, removing and listing all blogs.
     '''
@@ -107,8 +127,7 @@ def blogs(setup, add, remove, info):
         blog_obj = Blog(cfg, blog_name)
         if not blog_obj.exists():
             blog_obj.register()
-            response = click.prompt("Setup this blog's configs now?[y/n]")
-            if response.upper() == 'Y':
+            if click.confirm("Setup this blog's configs now?"):
                 setup = blog_name
             else:
                 print("Registered", blog_name, "succesfully")
@@ -130,6 +149,13 @@ def blogs(setup, add, remove, info):
                     blog_obj.add_key(k, value)
             click.secho("successfully updated configs")
 
+    elif default:
+        blog_name = default
+        blog_obj = Blog(cfg, blog_name)
+        if blog_obj.exists():
+            blog_obj.set_default(blog_name)
+            print("Default blog set to",blog_name)
+    
     elif remove:
         blog_name = remove
         blog_obj = Blog(cfg, blog_name)
@@ -141,14 +167,26 @@ def blogs(setup, add, remove, info):
             click.secho("Deleted {0}".format(blog_name))
 
     elif info:
-        if info == 'list':
+        config_file = cfg.__str__()
+
+        if info == 'config_file':
+            print(cfg)
+            return 0
+
+        if not os.path.isfile(config_file):
+            print("Initialize the file with blogger-cli blogs -a <name> first")
+            return 0
+
+        elif info == 'list':
             [print(i) for i in Blog.blogs(cfg)]
-        elif info == 'config_file':
-           print(cfg) 
+
         elif info == 'config':
             pprint(cfg.get_dict())
+
         else:
-            print("unsupported info argument: use one in (list, config)")
+            message = ["unsupported info argument: use one of",
+                        "[list, config, config_file]",]
+            print("\n".join(message))
 
     else:
         click.secho("No option provided")
