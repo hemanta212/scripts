@@ -138,10 +138,7 @@ class Config:
             return configs.values()
 
         elif key:
-            try:
-                return configs[key]
-            except KeyError:
-                raise KeyError("The key doesnot exist in config")
+            return configs.get(key)
 
         elif value:
             key = [k for k, v in configs.items() if v == value]
