@@ -17,14 +17,15 @@ class Logger:
         console [bool] = swictch console logging on or off.
     '''
 
-    def __init__(self, name=None, level='warning', file='project.log',
-                 mode='a', debug_file=None, debug_mode='w', **kwargs):
+    def __init__(self, name=None, level='warning', mode='a', debug_mode='w',
+                file='project.log', debug_file=None, console=False, **kwargs):
         super().__init__(**kwargs)
         self.name = name
         self.level = self.level_parser(level)
         self.file = file
         self.mode = mode
         self.debug_mode = debug_mode
+        self.console = console
         self.debug_file = debug_file
 
     @staticmethod
@@ -53,8 +54,9 @@ class Logger:
         '''
         if not os.path.exists(file):
             try:
-                os.makedirs(os.path.split(file)[0])
-            except FileExistsError:
+                if os.path.split(file)[0] != '':
+                    os.makedirs(os.path.split(file)[0])
+            except FileExistsError :
                 pass
 
     def get_logger(self):
@@ -69,18 +71,20 @@ class Logger:
         logger = logging.getLogger(self.name)
         logger.setLevel(logging.DEBUG)
 
-        # create console handler and set level to debug
-        console_handler = logging.StreamHandler()
-        console_handler.setLevel(logging.DEBUG)
         # create formatter
         format_style = '%(asctime)s : %(name)s: %(levelname)s : %(message)s'
         formatter = logging.Formatter(format_style)
-        # add formatter to console_handler
-        console_handler.setFormatter(formatter)
-        # add console_handler to logger
-        logger.addHandler(console_handler)
 
-        # create file handler and set level to warning
+        if self.console:
+            # create console handler and set level to debug
+            console_handler = logging.StreamHandler()
+            console_handler.setLevel(logging.DEBUG)
+            # add formatter to console_handler
+            console_handler.setFormatter(formatter)
+            # add console_handler to logger
+            logger.addHandler(console_handler)
+
+         # create file handler and set level
         self.handle_file(self.file)
         filehandler = logging.FileHandler(self.file, mode=self.mode)
         filehandler.setLevel(self.level)
