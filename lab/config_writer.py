@@ -25,6 +25,12 @@ class Config:
         self.file = os.path.basename(file)
         self.backup_dir = os.path.expanduser(backup_dir)
 
+    def __str__(self):
+        return self.file_path
+
+    def __repr__(self):
+        return "file: {0}, backup_dir: {1}".format(self.file, self.backup_dir)
+
     def write(self, key, value):
         '''
         writes to a config file as a dictionary
