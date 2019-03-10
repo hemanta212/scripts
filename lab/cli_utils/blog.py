@@ -8,15 +8,30 @@ class Blog:
             'ipynb_dir': None,
             'run': None,
         }
+    
+    def __repr__(self):
+        return "configuration: {0}, blog: {1}".format(self.cfg, self.blog)
+    
+    def __str__(self):
+        return self.blog
 
     def delete(self):
         try:
             blog_list = self.cfg.read(key='blogs')
         except KeyError:
             print("blog doesnot exist")
+            return 0
         blog_list.remove(self.blog)
-        self.cfg.delete_key(str(self.blog))
+        self.cfg.delete_key(self.blog)
+
+        if self.cfg.read(key='default') == self.blog:
+            self.cfg.write('default', None)
         self.cfg.write('blogs', blog_list)
+
+    def set_default(self, default_blog):
+        config_dict = self.cfg.get_dict()
+        config_dict['default']=default_blog
+        self.cfg.write_dict(config_dict)
 
     def register(self):
         try:
@@ -50,7 +65,7 @@ class Blog:
             blog_list = self.cfg.read(key='blogs')
         except (KeyError, ValueError, FileNotFoundError):  # Valuerror if file is empty
             self.cfg.init_config()
-            print("no blog  registered yet")
+            print("no blog registered yet")
             return False
 
         if self.blog in blog_list:
