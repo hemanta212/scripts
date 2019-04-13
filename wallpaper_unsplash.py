@@ -88,8 +88,7 @@ def random_wallpaper():
 duplicate = True
 while duplicate:
     wallpaper_url = random_wallpaper()
-    if not is_duplicate(wallpaper_url):
-        duplicate = False
+    duplicate = is_duplicate(wallpaper_url)
 
 print("Downloading the images:", wallpaper_url)
 image_raw = requests.get(wallpaper_url, headers=headers)
