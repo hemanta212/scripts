@@ -7,7 +7,7 @@ My portable scripts laboratory to give birth to pythonic scripts
   Send formatted emails using the smtp server.
 
   ### 2. headless.vbs :
-  A vbscript to execute programs headlessly.Use win win10 scheduler for startup scripts
+  A vbscript to execute programs headlessly. Use windows 10 scheduler for startup scripts.
 
   ### 3. logger_file:
   A simplified (no param needed) logger.
@@ -15,7 +15,7 @@ My portable scripts laboratory to give birth to pythonic scripts
   ### 4. config_writer:
   A simple config_writer file to write configs
 
-  ### 5. wall.py :
+  ### 5. dark_wallpaper.py :
   A windows darkthemed wallpaper changer.
 
   ### 6. pull.py :
@@ -23,3 +23,6 @@ My portable scripts laboratory to give birth to pythonic scripts
 
   ### 7. win_notify.py :
   A windows toast notification generator(Not mine). (Tip: use win10toast library for serious work)
+  
+  ### 7. pirated_program_launcher.py :
+  A python script that switches wifi off then launches a program and only turns wifi back on after launch of that program
